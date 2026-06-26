@@ -1,0 +1,14 @@
+const r = require('express').Router();
+const c = require('../controllers/followup.controller');
+const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
+const S = require('../validators/schemas');
+r.use(auth);
+r.get('/', c.list);
+r.get('/message/:enquiryId', c.message);
+r.post('/remind', c.remind);
+r.post('/auto-sweep', c.autoSweep);
+r.post('/', validate(S.followupCreate), c.create);
+r.put('/:id', c.update);
+r.patch('/:id/complete', c.complete);
+module.exports = r;

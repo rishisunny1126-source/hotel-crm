@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: hotel-crm-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm ci && npm run migrate
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PGSSL
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true

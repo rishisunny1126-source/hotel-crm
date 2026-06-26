@@ -1,0 +1,12 @@
+const r = require('express').Router();
+const c = require('../controllers/ratePlan.controller');
+const auth = require('../middleware/auth');
+const authorize = require('../middleware/rbac');
+r.use(auth);
+r.get('/resolve', c.resolve);
+r.get('/', c.list);
+r.get('/:id', c.get);
+r.post('/', authorize('admin','manager'), c.create);
+r.put('/:id', authorize('admin','manager'), c.update);
+r.delete('/:id', authorize('admin'), c.remove);
+module.exports = r;

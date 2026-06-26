@@ -1,0 +1,1 @@
+module.exports = require('../utils/crudFactory')({ table:'room_service_requests', columns:['room_id','booking_id','service_type','description','status','assigned_to'], searchable:['description'], filterable:['status','service_type','assigned_to'] });

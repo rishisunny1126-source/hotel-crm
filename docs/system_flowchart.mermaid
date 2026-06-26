@@ -1,0 +1,33 @@
+%% Hotel Enquiry & Follow-Up CRM — System Flowchart
+%% Paste into any Mermaid renderer (GitHub, mermaid.live, VS Code Mermaid preview)
+flowchart TD
+    subgraph CLIENT["Users — 6 roles"]
+        U["Admin · Manager · Front Desk · Housekeeping · Accounts · Corporate"]
+    end
+
+    U -->|opens app| FE["Frontend — React SPA<br/>Vite · Tailwind · Recharts"]
+    FE -->|Axios + JWT Bearer over HTTPS| API
+
+    subgraph API["Express REST API · Node.js (~55 endpoints)"]
+        direction LR
+        M1["JWT Auth"] --> M2["RBAC"] --> M3["Joi Validation"] --> M4["Controller"]
+    end
+
+    API --> SVC
+    subgraph SVC["Services"]
+        direction LR
+        S1["Pricing engine<br/>seasonal rate"]
+        S2["AI / Messaging<br/>follow-up + reminders"]
+        S3["PDF / CSV<br/>invoices + reports"]
+    end
+
+    SVC --> DB[("PostgreSQL · Neon<br/>enquiries · rooms · bookings · payments · history")]
+
+    %% Business workflow
+    subgraph FLOW["Core workflow — enquiry to revenue"]
+        direction LR
+        W1["Enquiry<br/>captured"] --> W2["Follow-up<br/>+ AI message"] --> W3["Availability<br/>conflict-free"] --> W4["Booking<br/>convert"] --> W5["Check-in / out"] --> W6["Payment + GST"] --> W7["Dashboard & Reports"]
+    end
+
+    DB -.feeds.-> FLOW
+    API -.every action logged.-> HIST["Enquiry History Timeline<br/>created · status changed · follow-up · booking confirmed"]

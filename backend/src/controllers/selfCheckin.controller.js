@@ -1,0 +1,1 @@
+module.exports = require('../utils/crudFactory')({ table:'self_checkins', columns:['booking_id','guest_name','phone','id_proof_type','id_proof_number','check_in_date','reviewed','reviewed_by'], searchable:['guest_name','phone'], filterable:['reviewed'] });

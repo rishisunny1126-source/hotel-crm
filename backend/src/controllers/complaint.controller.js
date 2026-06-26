@@ -1,0 +1,1 @@
+module.exports = require('../utils/crudFactory')({ table:'complaints', columns:['guest_id','booking_id','title','description','priority','status','assigned_to','resolved_at'], searchable:['title','description'], filterable:['status','priority','assigned_to'] });

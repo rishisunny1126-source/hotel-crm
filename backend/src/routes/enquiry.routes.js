@@ -1,0 +1,14 @@
+const r = require('express').Router();
+const c = require('../controllers/enquiry.controller');
+const auth = require('../middleware/auth');
+const authorize = require('../middleware/rbac');
+const validate = require('../middleware/validate');
+const S = require('../validators/schemas');
+r.use(auth);
+r.get('/', c.list);
+r.get('/:id', c.get);
+r.post('/', authorize('admin','manager','front_desk','corporate_coordinator'), validate(S.enquiryCreate), c.create);
+r.put('/:id', authorize('admin','manager','front_desk','corporate_coordinator'), c.update);
+r.patch('/:id/status', validate(S.enquiryStatus), c.changeStatus);
+r.patch('/:id/assign', authorize('admin','manager'), validate(S.enquiryAssign), c.assign);
+module.exports = r;

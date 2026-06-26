@@ -1,0 +1,1 @@
+module.exports = require('../utils/crudFactory')({ table:'shift_handovers', columns:['shift','staff_id','note','priority','completed','handover_date'], filterable:['shift','completed','handover_date','priority'], orderBy:'created_at DESC' });

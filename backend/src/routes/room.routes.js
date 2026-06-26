@@ -1,0 +1,16 @@
+const r = require('express').Router();
+const c = require('../controllers/room.controller');
+const auth = require('../middleware/auth');
+const authorize = require('../middleware/rbac');
+const validate = require('../middleware/validate');
+const S = require('../validators/schemas');
+r.use(auth);
+r.get('/availability', c.availability);
+r.get('/board', c.board);
+r.get('/', c.list);
+r.get('/:id', c.get);
+r.post('/', authorize('admin','manager'), validate(S.roomCreate), c.create);
+r.put('/:id', authorize('admin','manager'), c.update);
+r.patch('/:id/status', validate(S.roomStatus), c.changeStatus);
+r.delete('/:id', authorize('admin'), c.remove);
+module.exports = r;

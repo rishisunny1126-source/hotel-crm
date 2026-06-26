@@ -1,0 +1,11 @@
+const r = require('express').Router();
+const c = require('../controllers/payment.controller');
+const auth = require('../middleware/auth');
+const authorize = require('../middleware/rbac');
+r.use(auth);
+r.get('/settlement', authorize('admin','manager','accounts'), c.settlement);
+r.get('/', c.list);
+r.get('/:id', c.get);
+r.get('/:id/invoice', c.invoice);
+r.post('/', authorize('admin','manager','accounts','front_desk'), c.create);
+module.exports = r;

@@ -1,0 +1,14 @@
+const r = require('express').Router();
+const c = require('../controllers/booking.controller');
+const auth = require('../middleware/auth');
+const authorize = require('../middleware/rbac');
+const validate = require('../middleware/validate');
+const S = require('../validators/schemas');
+r.use(auth);
+r.get('/', c.list);
+r.get('/:id', c.get);
+r.post('/', authorize('admin','manager','front_desk'), validate(S.bookingCreate), c.create);
+r.post('/from-enquiry/:enquiryId', authorize('admin','manager','front_desk'), validate(S.bookingFromEnquiry), c.fromEnquiry);
+r.patch('/:id/check-in', authorize('admin','manager','front_desk'), c.checkIn);
+r.patch('/:id/check-out', authorize('admin','manager','front_desk'), c.checkOut);
+module.exports = r;

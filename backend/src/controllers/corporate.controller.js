@@ -1,0 +1,1 @@
+module.exports = require('../utils/crudFactory')({ table:'corporate_bookings', columns:['company_name','contact_person','contact_phone','contact_email','rooms_required','start_date','end_date','budget','status','coordinator_id'], searchable:['company_name','contact_person'], filterable:['status','coordinator_id'] });
