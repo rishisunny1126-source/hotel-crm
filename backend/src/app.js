@@ -9,6 +9,7 @@ const errorHandler = require('./middleware/error');
 const notFound = require('./middleware/notFound');
 
 const app = express();
+app.set('trust proxy', 1);   // Render/Vercel run behind a proxy (fixes rate-limit X-Forwarded-For)
 
 app.use(helmet());                                  // secure HTTP headers (XSS, clickjacking)
 app.use(cors({ origin: env.clientUrl, credentials: true }));
