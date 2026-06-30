@@ -104,12 +104,30 @@ function generateFollowUpMessage(enquiry) {
 }
 
 // ---- transport ----
+async function sendViaBrevo({ to, subject, body, html }) {
+  const sender = { name: 'Sri Nirvana Plaza', email: process.env.BREVO_SENDER || process.env.GMAIL_USER };
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: { 'api-key': process.env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({ sender, to: [{ email: to }], subject,
+      htmlContent: html || `<p>${(body || '').split(String.fromCharCode(10)).join('<br>')}</p>`, textContent: body || '' }),
+  });
+  if (!res.ok) { const t = await res.text(); return { delivered: false, reason: `brevo ${res.status}: ${t.slice(0,180)}` }; }
+  return { delivered: true, channel: 'brevo', to, at: new Date().toISOString() };
+}
+
+// Sends email. Prefers Brevo HTTPS API (works on hosts that block SMTP like Render free);
+// falls back to Gmail SMTP for local development.
 async function sendEmail({ to, subject, body, html }) {
   if (!to) return { delivered: false, reason: 'no email address on record' };
+  if (process.env.BREVO_API_KEY) {
+    try { return await sendViaBrevo({ to, subject, body, html }); }
+    catch (e) { return { delivered: false, reason: 'brevo error: ' + e.message }; }
+  }
   const t = getTransport();
-  if (!t) { console.log(`[email-not-configured] would email ${to}: ${subject}`); return { delivered: false, reason: 'GMAIL not set', to }; }
+  if (!t) { console.log(`[email-not-configured] would email ${to}: ${subject}`); return { delivered: false, reason: 'no email provider configured (set BREVO_API_KEY or GMAIL_*)' , to }; }
   await t.sendMail({ from: `${HOTEL} <${process.env.GMAIL_USER}>`, to, subject, text: body, ...(html ? { html } : {}) });
-  return { delivered: true, channel: 'email', to, at: new Date().toISOString() };
+  return { delivered: true, channel: 'gmail', to, at: new Date().toISOString() };
 }
 
 module.exports = { generateFollowUpMessage, buildBookingEmail, buildCheckoutEmail, sendEmail };
