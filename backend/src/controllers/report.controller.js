@@ -12,12 +12,12 @@ const toCsv = (rows) => {
 
 const REPORTS = {
   enquiry:   `SELECT ref_code,guest_name,mobile,source,status,room_type,budget,created_at FROM enquiries ORDER BY created_at DESC`,
-  booking:   `SELECT b.booking_code,g.name guest,r.room_number,b.check_in_date,b.check_out_date,b.amount,b.status
+  booking:   `SELECT b.booking_code, g.name AS guest, r.room_number, b.check_in_date, b.check_out_date, b.amount, b.status
               FROM bookings b JOIN guests g ON g.id=b.guest_id JOIN rooms r ON r.id=b.room_id ORDER BY b.created_at DESC`,
   occupancy: `SELECT room_number,room_type,status,hk_status,rate FROM rooms ORDER BY room_number`,
-  revenue:   `SELECT to_char(date_trunc('month',created_at),'YYYY-MM') month, sum(amount)::float revenue, count(*)::int bookings
-              FROM bookings GROUP BY 1 ORDER BY 1`,
-  followup:  `SELECT f.scheduled_date,f.status,f.priority,e.guest_name,e.mobile
+  revenue:   `SELECT to_char(date_trunc('month',created_at),'YYYY-MM') AS month, sum(amount)::float AS revenue, count(*)::int AS bookings
+              FROM bookings GROUP BY date_trunc('month',created_at) ORDER BY date_trunc('month',created_at)`,
+  followup:  `SELECT f.scheduled_date, f.status, f.priority, e.guest_name, e.mobile
               FROM follow_ups f JOIN enquiries e ON e.id=f.enquiry_id ORDER BY f.scheduled_date DESC`,
   complaint: `SELECT title,priority,status,created_at,resolved_at FROM complaints ORDER BY created_at DESC`,
 };
