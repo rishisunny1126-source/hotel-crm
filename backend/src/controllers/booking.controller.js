@@ -25,7 +25,8 @@ async function emailConfirmation(bookingId) {
               g.name AS guest_name, g.email, r.room_number, r.room_type
        FROM bookings b JOIN guests g ON g.id=b.guest_id JOIN rooms r ON r.id=b.room_id
        WHERE b.id=$1`, [bookingId]);
-    if (rows[0]) await sendEmail(buildBookingEmail(rows[0]));
+    if (rows[0]) { const r = await sendEmail(buildBookingEmail(rows[0])); console.log('[email] booking confirm ->', rows[0].email, JSON.stringify(r)); }
+    else console.log('[email] booking confirm skipped: no guest email');
   } catch (e) { console.error('[email] booking confirmation failed:', e.message); }
 }
 
@@ -143,7 +144,7 @@ exports.checkOut = asyncHandler(async (req, res) => {
          WHERE b.id=$1`, [booking.id]);
       if (info.rows[0]) {
         const url = `${clientUrl}/feedback/${booking.id}`;
-        await sendEmail(buildCheckoutEmail(info.rows[0], url));
+        const r = await sendEmail(buildCheckoutEmail(info.rows[0], url)); console.log('[email] checkout ->', info.rows[0].email, JSON.stringify(r));
       }
     } catch (e) { console.error('[email] checkout email failed:', e.message); }
     ok(res, booking);

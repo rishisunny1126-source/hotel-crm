@@ -61,7 +61,9 @@ exports.create = asyncHandler(async (req, res) => {
     await client.query('COMMIT');
     // immediate acknowledgement / first follow-up email to the guest
     if (rows[0].email) sendEmail(generateFollowUpMessage(rows[0]))
-      .catch(e => console.error('[email] enquiry ack failed:', e.message));
+      .then(r => console.log('[email] enquiry ack ->', rows[0].email, JSON.stringify(r)))
+      .catch(e => console.error('[email] enquiry ack error:', e.message));
+    else console.log('[email] enquiry ack skipped: no email on enquiry', rows[0].ref_code);
     // Kick off the automatic follow-up chain. Non-fatal: a new enquiry must
     // still succeed even if scheduling the first nudge hiccups.
     scheduleNextAutoFollowup(rows[0].id).catch((err) =>
